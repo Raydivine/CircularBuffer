@@ -1,13 +1,15 @@
-#include <stdio.h>
-#include "CircularBuffer.h"
-#include <malloc.h>
+#include "stdio.h"
+#include "malloc.h"
 #include "CircularBuffer.h"
 #include "CException.h"
 
 
-CircularBuffer *circularBufferNew(int length) {
-	CircularBuffer *circularBuffer;
 
+
+CircularBuffer *circularBufferNew(int length){
+	
+	CircularBuffer *circularBuffer;
+	
 	circularBuffer = malloc(sizeof(CircularBuffer));
 	circularBuffer->buffer = malloc(sizeof(int) * length);
 	circularBuffer->length = length;
@@ -19,41 +21,59 @@ CircularBuffer *circularBufferNew(int length) {
 }
 
 
-void circularBufferDel(CircularBuffer *circularBuffer) {
+
+
+void circularBufferDel(CircularBuffer *circularBuffer){
+
 	free(circularBuffer);
+	
 }
 
-void circularBufferAdd(CircularBuffer *cb, int valueToAdd) {
 
+
+
+
+void circularBufferAdd(CircularBuffer *cb, int valueToAdd){
 	
-    if (cb == NULL || cb->length == NULL) //if the buffer is empty size, then throw the error buffer is empty
+
+	while ( (cb->length) <= (cb->size) )  //if the buffer size increase unitl larger then the length, give the error message of buffer is full
+		Throw(ERR_BUFFER_IS_FULL);
+		
+	while (cb->length == NULL)        //if the buffer is empty size, then throw the error buffer is empty
          Throw(ERR_BUFFER_IS_EMPTY);
-
-     *cb->tail = valueToAdd; // add the value to the buffer tail
-      cb->tail++;
-	  
-    if (cb->tail == cb->buffer)   //if the valueToadd add until the tail end
-   {
-       Throw(ERR_BUFFER_IS_FULL); // throw the buffer is full message
-	   *cb->head = valueToAdd;  // put the valueToAdd to the head , then start add again
-        cb->head++;}
-
-	Throw(ERR_NO_ERROR);			
-}
 	
+	
+	
+	*cb->buffer = valueToAdd;  //assign ValueToAdd to buffer
+	cb->buffer++; cb->size++;   // buffer and size increament
+	
+	
+	 
+	if(cb->size == 0)     //if the size is empty then add value to tail
+		*cb->tail = valueToAdd;
+		
+    if(cb->size !=0)  //if size is not empty then replace the data to the head
+        *cb->head = valueToAdd;
+     
+	else 
+		cb->head++;  //increment the head
+   
+}
+
+
 int circularBufferRemove(CircularBuffer *cb){
 
-    if (cb == NULL || cb->buffer == NULL)  //if the buffer is empty size, then throw the error buffer is empty
-         Throw(ERR_BUFFER_IS_EMPTY);
 
-    int RemoveData = *cb->head; //Assign the buufer head data to variable RemoveData, if there is rest continue add 
-    cb->head++;
+	int PopData;
 	
-    if (cb->head == Cb->buffer_end) //when the head is assifn until end of buffer , throw the error message of buffer is empty
-	     Throw(ERR_BUFFER_IS_EMPTY);
-  
-  return RemoveData; // return all the data
+	while (cb->length == 0)        //if the buffer is empty size, then throw the error buffer is empty
+         Throw(ERR_BUFFER_IS_EMPTY);
+	
+	PopData = *cb->tail ;   // assign the data from the buffer tail to PopData
 
+	cb->tail++;  cb->size--;  // increment size and tail
+	
+	return PopData;
 }		
 	
  
